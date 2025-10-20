@@ -2,12 +2,14 @@ import express = require('express');
 import morgan = require('morgan');
 import cors = require('cors');
 import { UserRouter } from './router/user.router';
+import { ConfigServer } from './config/config';
 
-class ServerBootstrap {
+class ServerBootstrap extends ConfigServer {
     public app: express.Application = express();
-    private PORT: number = 8000;
+    private port: number = this.getNumberEnv("PORT");
 
     constructor() {
+        super();
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(morgan('dev'));
@@ -22,8 +24,8 @@ class ServerBootstrap {
     }
 
     public listen() {
-        this.app.listen(this.PORT, () => {
-            console.log(`Server is running on http://localhost:${this.PORT}`);
+        this.app.listen(this.port, () => {
+            console.log("Server running on port => ", this.port);
         });
     }
 }

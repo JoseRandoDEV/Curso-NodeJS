@@ -4,10 +4,12 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const user_router_1 = require("./router/user.router");
-class ServerBootstrap {
+const config_1 = require("./config/config");
+class ServerBootstrap extends config_1.ConfigServer {
     app = express();
-    PORT = 8000;
+    port = this.getNumberEnv("PORT");
     constructor() {
+        super();
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(morgan('dev'));
@@ -19,8 +21,8 @@ class ServerBootstrap {
         return [new user_router_1.UserRouter().router];
     }
     listen() {
-        this.app.listen(this.PORT, () => {
-            console.log(`Server is running on http://localhost:${this.PORT}`);
+        this.app.listen(this.port, () => {
+            console.log("Server running on port => ", this.port);
         });
     }
 }
