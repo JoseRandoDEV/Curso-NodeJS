@@ -3,6 +3,7 @@ import morgan = require('morgan');
 import cors = require('cors');
 import { UserRouter } from './router/user.router';
 import { ConfigServer } from './config/config';
+import { Connection, createConnection } from 'typeorm';
 
 class ServerBootstrap extends ConfigServer {
     public app: express.Application = express();
@@ -12,6 +13,9 @@ class ServerBootstrap extends ConfigServer {
         super();
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+
+        this.dbConnect();
+
         this.app.use(morgan('dev'));
         this.app.use(cors());
 
@@ -23,6 +27,10 @@ class ServerBootstrap extends ConfigServer {
         return [new UserRouter().router];
     }
 
+    async dbConnect(): Promise<Connection> {
+        return await createConnection(this.typeORMConfig);
+    }
+
     public listen() {
         this.app.listen(this.port, () => {
             console.log("Server running on port => ", this.port);
@@ -31,3 +39,7 @@ class ServerBootstrap extends ConfigServer {
 }
 
 new ServerBootstrap();
+
+// Para correr el servicio
+// npx ts-node src/test-db.ts
+// npx ts-node src/index.ts

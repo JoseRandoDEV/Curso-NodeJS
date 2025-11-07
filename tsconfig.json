@@ -2,13 +2,13 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     // File Layout
-    // "rootDir": "./src",
-    "outDir": "./dist",
+    "rootDir": "src",
+    "outDir": "dist",
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
+    "module": "commonjs",
+    "target": "ES2022",
     "types": [],
     // For nodejs:
     // "lib": ["esnext"],
@@ -16,6 +16,7 @@
     // and npm install -D @types/node
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "ignoreDeprecations": "6.0",
 
     // Other Outputs
     "sourceMap": true,
@@ -35,6 +36,8 @@
     // "noPropertyAccessFromIndexSignature": true,
 
     // Recommended Options
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
     "strict": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": false,
@@ -43,5 +46,8 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "strictPropertyInitialization": true,
-  }
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+  },
+  "include": ["src"],
 }
