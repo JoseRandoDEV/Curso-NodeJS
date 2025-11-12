@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestión de Usuarios</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+
+  <div class="w-full max-w-5xl bg-white shadow-lg rounded-2xl p-6">
+    <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">👥 Gestión de Usuarios</h1>
+
+    <!-- Formulario -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+      <input id="name" type="text" placeholder="Nombre" class="border rounded-lg px-3 py-2">
+      <input id="lastName" type="text" placeholder="Apellido" class="border rounded-lg px-3 py-2">
+      <input id="username" type="text" placeholder="Usuario" class="border rounded-lg px-3 py-2">
+      <input id="email" type="email" placeholder="Email" class="border rounded-lg px-3 py-2">
+      <input id="password" type="password" placeholder="Contraseña" class="border rounded-lg px-3 py-2">
+      <input id="city" type="text" placeholder="Ciudad" class="border rounded-lg px-3 py-2">
+      <input id="province" type="text" placeholder="Provincia" class="border rounded-lg px-3 py-2">
+      <button onclick="crearUsuario()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition sm:col-span-2 md:col-span-3">Agregar Usuario</button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full border border-gray-200 rounded-lg overflow-hidden">
+        <thead class="bg-blue-600 text-white">
+          <tr>
+            <th class="px-4 py-2">ID</th>
+            <th class="px-4 py-2">Nombre</th>
+            <th class="px-4 py-2">Apellido</th>
+            <th class="px-4 py-2">Usuario</th>
+            <th class="px-4 py-2">Email</th>
+            <th class="px-4 py-2">Ciudad</th>
+            <th class="px-4 py-2">Provincia</th>
+            <th class="px-4 py-2 text-center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="usuarios" class="bg-white"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const API = '/users'; // Ruta a tu endpoint Express
+
+    async function cargarUsuarios() {
+      const res = await fetch(API);
+      const data = await res.json();
+      const tbody = document.getElementById('usuarios');
+      tbody.innerHTML = '';
+
+      if (!data.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-gray-500">No hay usuarios registrados</td></tr>`;
+        return;
+      }
+
+      data.forEach(u => {
+        tbody.innerHTML += `
+          <tr class="border-b hover:bg-gray-50 transition">
+            <td class="px-4 py-2">${u.id}</td>
+            <td class="px-4 py-2">${u.name}</td>
+            <td class="px-4 py-2">${u.lastName}</td>
+            <td class="px-4 py-2">${u.username}</td>
+            <td class="px-4 py-2">${u.email}</td>
+            <td class="px-4 py-2">${u.city}</td>
+            <td class="px-4 py-2">${u.province}</td>
+            <td class="px-4 py-2 flex justify-center gap-2">
+              <button onclick="eliminarUsuario(${u.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition">🗑️</button>
+            </td>
+          </tr>`;
+      });
+    }
+
+    async function crearUsuario() {
+      const user = {
+        name: document.getElementById('name').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        username: document.getElementById('username').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        province: document.getElementById('province').value.trim(),
+      };
+
+      if (!user.name || !user.lastName || !user.username || !user.email || !user.password) {
+        alert('⚠️ Completa todos los campos obligatorios');
+        return;
+      }
+
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(user)
+      });
+
+      if (res.ok) {
+        alert('✅ Usuario agregado correctamente');
+        document.querySelectorAll('input').forEach(i => i.value = '');
+        cargarUsuarios();
+      } else {
+        alert('❌ Error al agregar usuario');
+      }
+    }
+
+    async function eliminarUsuario(id) {
+      if (!confirm('¿Eliminar este usuario?')) return;
+
+      const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert('🗑️ Usuario eliminado');
+        cargarUsuarios();
+      } else {
+        alert('❌ Error al eliminar usuario');
+      }
+    }
+
+    cargarUsuarios();
+  </script>
+
+</body>
+</html>
+
+
+

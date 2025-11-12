@@ -1,4 +1,4 @@
-import { Pool } from 'mysql2/promise';
-declare const pool: Pool;
-export default pool;
+import { DataSource } from "typeorm";
+export declare const AppDataSource: DataSource;
+export default AppDataSource;
 //# sourceMappingURL=db.d.ts.map

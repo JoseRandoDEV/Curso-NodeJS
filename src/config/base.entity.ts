@@ -1,12 +1,17 @@
-import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BaseEntity as TypeOrmBase,
+} from 'typeorm';
 
-export abstract class BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id!: string;
+export abstract class BaseEntity extends TypeOrmBase {
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
-    @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
-    createdAt!: Date;
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
+  createdAt!: Date;
 
-    @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
-    updatedAt!: Date;
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
+  updatedAt!: Date;
 }
