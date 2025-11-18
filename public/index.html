@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gestión de Usuarios</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
+
 <body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
 
   <div class="w-full max-w-5xl bg-white shadow-lg rounded-2xl p-6">
@@ -20,7 +22,9 @@
       <input id="password" type="password" placeholder="Contraseña" class="border rounded-lg px-3 py-2">
       <input id="city" type="text" placeholder="Ciudad" class="border rounded-lg px-3 py-2">
       <input id="province" type="text" placeholder="Provincia" class="border rounded-lg px-3 py-2">
-      <button onclick="crearUsuario()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition sm:col-span-2 md:col-span-3">Agregar Usuario</button>
+      <button onclick="crearUsuario()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition sm:col-span-2 md:col-span-3">Agregar
+        Usuario</button>
     </div>
 
     <!-- Tabla -->
@@ -43,8 +47,30 @@
     </div>
   </div>
 
+  <!-- Modal Editar -->
+  <div id="modalEditar" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white w-96 p-6 rounded-xl shadow-lg">
+      <h2 class="text-xl font-bold mb-4 text-blue-600">✏️ Editar Usuario</h2>
+
+      <input id="edit_name" type="text" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Nombre">
+      <input id="edit_lastName" type="text" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Apellido">
+      <input id="edit_username" type="text" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Usuario">
+      <input id="edit_email" type="email" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Email">
+      <input id="edit_city" type="text" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Ciudad">
+      <input id="edit_province" type="text" class="border rounded-lg w-full px-3 py-2 mb-2" placeholder="Provincia">
+
+      <div class="flex justify-end gap-2 mt-4">
+        <button onclick="cerrarModal()"
+          class="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500">Cancelar</button>
+        <button onclick="guardarCambios()"
+          class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">Guardar</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const API = '/users'; // Ruta a tu endpoint Express
+    const API = '/users';
+    let usuarioEditando = null;
 
     async function cargarUsuarios() {
       const res = await fetch(API);
@@ -59,49 +85,53 @@
 
       data.forEach(u => {
         tbody.innerHTML += `
-          <tr class="border-b hover:bg-gray-50 transition">
-            <td class="px-4 py-2">${u.id}</td>
-            <td class="px-4 py-2">${u.name}</td>
-            <td class="px-4 py-2">${u.lastName}</td>
-            <td class="px-4 py-2">${u.username}</td>
-            <td class="px-4 py-2">${u.email}</td>
-            <td class="px-4 py-2">${u.city}</td>
-            <td class="px-4 py-2">${u.province}</td>
-            <td class="px-4 py-2 flex justify-center gap-2">
-              <button onclick="eliminarUsuario(${u.id})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition">🗑️</button>
-            </td>
-          </tr>`;
+    <tr class="border-b hover:bg-gray-50 transition">
+      <td class="px-4 py-2">${u.id}</td>
+      <td class="px-4 py-2">${u.name}</td>
+      <td class="px-4 py-2">${u.lastName}</td>
+      <td class="px-4 py-2">${u.username}</td>
+      <td class="px-4 py-2">${u.email}</td>
+      <td class="px-4 py-2">${u.city}</td>
+      <td class="px-4 py-2">${u.province}</td>
+      <td class="px-4 py-2 flex justify-center gap-2">
+        <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-lg transition"
+                data-id="${u.id}"
+                onclick="abrirModal(event)">✏️</button>
+
+        <button onclick="eliminarUsuario('${u.id}')"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-lg transition">🗑️</button>
+      </td>
+    </tr>`;
       });
     }
 
     async function crearUsuario() {
       const user = {
-        name: document.getElementById('name').value.trim(),
-        lastName: document.getElementById('lastName').value.trim(),
-        username: document.getElementById('username').value.trim(),
-        email: document.getElementById('email').value.trim(),
-        password: document.getElementById('password').value.trim(),
-        city: document.getElementById('city').value.trim(),
-        province: document.getElementById('province').value.trim(),
+        name: name.value.trim(),
+        lastName: lastName.value.trim(),
+        username: username.value.trim(),
+        email: email.value.trim(),
+        password: password.value.trim(),
+        city: city.value.trim(),
+        province: province.value.trim(),
       };
 
       if (!user.name || !user.lastName || !user.username || !user.email || !user.password) {
-        alert('⚠️ Completa todos los campos obligatorios');
-        return;
+        return alert('⚠️ Completa todos los campos obligatorios');
       }
 
       const res = await fetch(API, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)
       });
 
       if (res.ok) {
-        alert('✅ Usuario agregado correctamente');
+        alert('✅ Usuario agregado');
         document.querySelectorAll('input').forEach(i => i.value = '');
         cargarUsuarios();
       } else {
-        alert('❌ Error al agregar usuario');
+        alert('❌ Error al agregar');
       }
     }
 
@@ -113,7 +143,72 @@
         alert('🗑️ Usuario eliminado');
         cargarUsuarios();
       } else {
-        alert('❌ Error al eliminar usuario');
+        alert('❌ Error al eliminar');
+      }
+    }
+
+    // ---------- MODAL EDICIÓN ----------
+    async function abrirModal(event) {
+      const id = event.target.dataset.id;
+      console.log("ID recibido para edición:", id);
+
+      const res = await fetch(`${API}/${id}`);
+      if (!res.ok) return alert("❌ No se pudo obtener el usuario");
+
+      usuarioEditando = await res.json();
+
+      edit_name.value = usuarioEditando.name;
+      edit_lastName.value = usuarioEditando.lastName;
+      edit_username.value = usuarioEditando.username;
+      edit_email.value = usuarioEditando.email;
+      edit_city.value = usuarioEditando.city;
+      edit_province.value = usuarioEditando.province;
+
+      modalEditar.classList.remove('hidden');
+      modalEditar.classList.add('flex');
+    }
+
+
+    function cerrarModal() {
+      document.getElementById('modalEditar').classList.add('hidden');
+      document.getElementById('modalEditar').classList.remove('flex');
+    }
+
+    async function guardarCambios() {
+      const updatedUser = {
+        name: edit_name.value.trim(),
+        lastName: edit_lastName.value.trim(),
+        username: edit_username.value.trim(),
+        email: edit_email.value.trim(),
+        city: edit_city.value.trim(),
+        province: edit_province.value.trim()
+      };
+
+      console.log("OBJETO A ENVIAR:", updatedUser);
+
+      const res = await fetch(`${API}/${usuarioEditando.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedUser)
+      });
+
+      console.log("STATUS:", res.status);
+
+      let responseData = null;
+      try {
+        responseData = await res.json();
+      } catch (err) {
+        console.error("❌ Error parseando JSON:", err);
+      }
+
+      console.log("RESPUESTA DEL SERVIDOR:", responseData);
+
+      if (res.ok) {
+        alert("✔ Cambios guardados");
+        cerrarModal();
+        cargarUsuarios();
+      } else {
+        alert("❌ Error al guardar cambios");
       }
     }
 
@@ -121,7 +216,5 @@
   </script>
 
 </body>
+
 </html>
-
-
-

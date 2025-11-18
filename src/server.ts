@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import express = require('express');
 import morgan = require('morgan');
 import cors = require('cors');
@@ -18,12 +19,10 @@ class ServerBootstrap extends ConfigServer {
         this.app.use(morgan('dev'));
         this.app.use(cors());
 
-        this.app.use('/api', this.routers());
-        this.listen();
-    }
+        // Aquí montamos correctamente el router
+        this.app.use('/users', new UserRouter().router);
 
-    routers(): Array<express.Router> {
-        return [new UserRouter().router];
+        this.listen();
     }
 
     public listen() {

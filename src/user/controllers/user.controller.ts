@@ -16,6 +16,7 @@ export class UserController {
             return this.httpResponse.Ok(res, data);
         }
         catch (error) {
+            console.error(error);
             return this.httpResponse.Error(res, error);
         }
     }
@@ -46,18 +47,29 @@ export class UserController {
 
     async updateUser(req: Request, res: Response) {
         const { id } = req.params;
+
         if (!id) {
-            return res.status(400).json({ message: "Hay un error al Actualizar" });
+            return res.status(400).json({ message: "ID requerido" });
         }
+
         try {
-            const data = await this.userService.updateUser(id);
-            return this.httpResponse.Ok(res, data);
-        }
-        catch (error) {
-            console.error(error);
-            return this.httpResponse.Error(res, error);
+            const userUpdated = await this.userService.updateUser(id, req.body);
+
+            if (!userUpdated) {
+                return res.status(404).json({ message: "Usuario no encontrado" });
+            }
+
+            return res.status(200).json({
+                message: "Usuario actualizado correctamente",
+                data: userUpdated
+            });
+
+        } catch (error) {
+            console.error("Error updateUser:", error);
+            return res.status(500).json({ message: "Error al actualizar", error });
         }
     }
+
 
     async deleteUser(req: Request, res: Response) {
         const { id } = req.params;
@@ -65,7 +77,7 @@ export class UserController {
             return res.status(400).json({ message: "Hay un error al Eliminar" });
         }
         try {
-            const data = await this.userService.deleteUser(id, req.body);
+            const data = await this.userService.deleteUser(id);
             return this.httpResponse.Ok(res, data);
         }
         catch (error) {

@@ -19,7 +19,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"tsc --watch\" \"wait-on ./dist/index.js && nodemon dist/index.js\"",
     "start:dev": "npm start",
-    "start:prod": "SET NODE_ENV=production && npm start"
+    "start:prod": "SET NODE_ENV=production && npm start",
+    "typeorm": "typeorm-ts-node-esm -d ./src/datasource.ts",
+    "m:gen": "npm run typeorm migration:generate",
+    "m:run": "npm run typeorm migration:run"
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
@@ -42,6 +45,7 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.10.0",
     "concurrently": "^9.2.1",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2"
   }
 }
