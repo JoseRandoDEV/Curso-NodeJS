@@ -4,7 +4,7 @@ import { CustomerEntity } from './customer/entities/customer.entity';
 import { ProductEntity } from './product/entities/product.entity';
 import { CategoryEntity } from './category/entities/category.entity';
 import { PurchaseEntity } from './purchase/entities/purchase.entity';
-import { PurchaseProductEntity } from './custom/entities/purchases-products.entity';
+import { PurchaseProductEntity } from './purchase/entities/purchases-products.entity';
 
 
 

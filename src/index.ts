@@ -32,6 +32,24 @@ AppDataSource.initialize()
       }
     });
 
+    // ✅ GET: obtener usuario por ID
+    app.get('/users/:id', async (req, res) => {
+      try {
+        const { id } = req.params;
+        const user = await userRepo.findOneBy({ id });
+
+        if (!user) {
+          return res.status(404).json({ message: 'Usuario no encontrado' });
+        }
+
+        res.json(user);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener usuario por ID' });
+      }
+    });
+
+
     // ✅ POST: crear nuevo usuario
     app.post('/users', async (req, res) => {
       try {
@@ -90,5 +108,4 @@ AppDataSource.initialize()
   })
   .catch((error) => console.error('❌ Error al conectar con la base de datos:', error));
 
-  // npx ts-node src/index.ts
-  
+// npx ts-node src/index.ts

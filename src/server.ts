@@ -3,7 +3,6 @@ import morgan = require('morgan');
 import cors = require('cors');
 import { UserRouter } from './user/user.router';
 import { ConfigServer } from './config/config';
-import { Connection, createConnection } from 'typeorm';
 
 class ServerBootstrap extends ConfigServer {
     public app: express.Application = express();
@@ -25,10 +24,6 @@ class ServerBootstrap extends ConfigServer {
 
     routers(): Array<express.Router> {
         return [new UserRouter().router];
-    }
-
-    async dbConnect(): Promise<Connection> {
-        return await createConnection(this.typeORMConfig);
     }
 
     public listen() {
